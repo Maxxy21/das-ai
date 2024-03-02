@@ -10,7 +10,6 @@ import {EmptyBoards} from "./empty-boards";
 import {EmptyFavorites} from "./empty-favorites";
 import {NewBoardButton} from "./new-board-button";
 
-
 interface BoardListProps {
     orgId: string;
     query: {
