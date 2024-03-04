@@ -24,6 +24,7 @@ const client = createClient({
 
         return [];
     },
+
 });
 
 // Presence represents the properties that exist on every user in the Room
