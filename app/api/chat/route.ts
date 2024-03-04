@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
 
         const systemMessage: ChatCompletionMessage = {
-            role: "system",
+            role: "assistant",
             content: "You are an intelligent start-up collaboration app. Here are the relevant notes based on your query:\n" + relevantNotesContent,
         };
 
