@@ -14,6 +14,17 @@ export const liveblocks = new Liveblocks({
     secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
+// export async function getBoardId(request: NextRequest): Promise<string | null> {
+//     // ...your existing logic to determine boardId...
+//     const { room } = await request.json();
+//     const board = await convex.query(api.board.get, { id: room });
+//     if (!board) {
+//         console.log("Board not found");
+//         return null;
+//     }
+//     return board._id as string;
+// }
+
 
 export async function POST(request: NextRequest) {
     const authorization = await auth();
@@ -26,15 +37,9 @@ export async function POST(request: NextRequest) {
     const {room} = await request.json();
     const board = await convex.query(api.board.get, {id: room});
 
-    const boardId = board?._id as string;
-    const storage = await liveblocks.getStorageDocument(boardId, "json") as unknown as StorageDocument;
-    console.log(storage)
-
-
     if (board?.orgId !== authorization.orgId) {
         return new Response("Unauthorized", {status: 403});
     }
-
 
     const userInfo = {
         name: user.firstName || "Team mate",

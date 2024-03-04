@@ -1,11 +1,14 @@
 "use client";
 import Image from 'next/image';
 import {Hint} from "@/components/hint";
-import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import ChatBox from "./chat-box";
 
-export const ChatButton = () => {
+interface ChatButtonProps {
+    boardId: string;
+}
+
+export const ChatButton = ({boardId}: ChatButtonProps) => {
     const [chatBoxOpen, setChatBoxOpen] = useState(false);
 
     return (
@@ -19,7 +22,7 @@ export const ChatButton = () => {
                     onClick={() => setChatBoxOpen(true)}
                 />
             </Hint>
-            <ChatBox open={chatBoxOpen} onClose={() => setChatBoxOpen(false)}/>
+            <ChatBox open={chatBoxOpen} onClose={() => setChatBoxOpen(false)} boardId={boardId}/>
         </div>
     );
 }

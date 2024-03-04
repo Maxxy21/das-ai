@@ -46,13 +46,11 @@ export const Note = ({
         {storage},
         newValue: string,
     ) => {
-        // Directly using newValue now, without debouncing
-        if (!newValue.trim() || newValue === "Text") return; // Early return if newValue is not valid
-
         const liveLayers = storage.get("layers");
+
         liveLayers.get(id)?.set("value", newValue);
 
-        const embedding = await getEmbedding(newValue);
+        const embedding = await getEmbedding(newValue)
 
         await dasIndex.upsert([
             {
@@ -61,15 +59,14 @@ export const Note = ({
                 metadata: {boardId: boardId},
             },
         ]);
+
     }, []);
 
     const handleContentChange = (e: ContentEditableEvent) => {
         updateValue(e.target.value);
     };
 
-    const handleBlur = () => {
-        updateValue(value || "Text")
-    }
+
 
 
     return (
@@ -88,7 +85,6 @@ export const Note = ({
             <ContentEditable
                 html={value || "Text"}
                 onChange={handleContentChange}
-                onBlur={handleBlur}
                 className={cn(
                     "h-full w-full flex items-center justify-center text-center outline-none",
                     font.className

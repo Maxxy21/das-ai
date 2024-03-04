@@ -1,6 +1,6 @@
 import {Pinecone} from "@pinecone-database/pinecone";
 
-const apiKey = "e779592d-64e3-40ba-a4a5-1133d26a0132";
+const apiKey = process.env.PINECONE_API_KEY!;
 
 if (!apiKey) {
     throw Error("PINECONE_API_KEY is not set");

@@ -455,7 +455,7 @@ export const Canvas = ({
         >
             <Info boardId={boardId}/>
             <Participants/>
-            <ChatButton/>
+            <ChatButton boardId={boardId}/>
             <Toolbar
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}

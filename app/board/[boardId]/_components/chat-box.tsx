@@ -10,10 +10,11 @@ import {Input} from "@/components/ui/input";
 
 interface ChatBoxProps {
     open: boolean;
+    boardId: string;
     onClose: () => void;
 }
 
-export default function ChatBox({open, onClose}: ChatBoxProps) {
+export default function ChatBox({open, onClose, boardId}: ChatBoxProps) {
     const {
         messages,
         input,
@@ -22,7 +23,9 @@ export default function ChatBox({open, onClose}: ChatBoxProps) {
         setMessages,
         isLoading,
         error,
-    } = useChat();
+    } = useChat({
+        body: {boardId},
+    });
 
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -75,7 +78,7 @@ export default function ChatBox({open, onClose}: ChatBoxProps) {
                     {!error && messages.length === 0 && (
                         <div className="flex h-full items-center justify-center gap-3">
                             <Bot/>
-                            Ask the AI a question about your notes
+                            Ask the AI a question about your canvas
                         </div>
                     )}
                 </div>
