@@ -1,12 +1,19 @@
 import {dasIndex} from "@/lib/db/pinecone";
 
 export async function DELETE(request: Request) {
-    const body = await request.json();
-    const {id} = body;
+    try {
+        const body = await request.json();
+        const {id} = body;
 
-    await dasIndex.deleteOne(id);
+        await dasIndex.deleteOne(id);
 
-    return {
-        status: 200,
-    };
+        return {
+            status: 200,
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            status: 500,
+        };
+    }
 }
