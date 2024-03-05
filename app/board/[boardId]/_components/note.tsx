@@ -4,8 +4,7 @@ import ContentEditable, {ContentEditableEvent} from "react-contenteditable";
 import {NoteLayer} from "@/types/canvas";
 import {cn, colorToCss, getContrastingTextColor} from "@/lib/utils";
 import {useMutation} from "@/liveblocks.config";
-import {getEmbedding} from "@/lib/openai";
-import {dasIndex} from "@/lib/db/pinecone";
+
 
 const font = Kalam({
     subsets: ["latin"],
@@ -50,23 +49,27 @@ export const Note = ({
 
         liveLayers.get(id)?.set("value", newValue);
 
-        const embedding = await getEmbedding(newValue)
+        try {
+            const response = await fetch('/api/note-content', {
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        boardId: boardId,
+                        id: id,
+                        content: newValue
+                    })
+            })
+            if (!response.ok) throw Error("Status code: " + response.status);
 
-        await dasIndex.upsert([
-            {
-                id: id,
-                values: embedding,
-                metadata: {boardId: boardId},
-            },
-        ]);
+        } catch (e) {
+            console.error(e)
+        }
 
     }, []);
 
     const handleContentChange = (e: ContentEditableEvent) => {
         updateValue(e.target.value);
     };
-
-
 
 
     return (

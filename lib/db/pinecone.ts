@@ -1,6 +1,6 @@
 import {Pinecone} from "@pinecone-database/pinecone";
 
-const apiKey = process.env.PINECONE_API_KEY!;
+const apiKey = process.env.PINECONE_API_KEY || process.env.NEXT_PUBLIC_PINECONE_API_KEY;
 
 if (!apiKey) {
     throw Error("PINECONE_API_KEY is not set");
@@ -8,7 +8,7 @@ if (!apiKey) {
 
 const pinecone = new Pinecone({
     environment: "gcp-starter",
-    apiKey:"e779592d-64e3-40ba-a4a5-1133d26a0132"
+    apiKey
 });
 
 export const dasIndex = pinecone.Index("das-for-miro");

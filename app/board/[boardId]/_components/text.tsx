@@ -7,6 +7,7 @@ import {useMutation} from "@/liveblocks.config";
 import {getEmbedding} from "@/lib/openai";
 import {dasIndex} from "@/lib/db/pinecone";
 
+
 const font = Kalam({
     subsets: ["latin"],
     weight: ["400"],
@@ -50,15 +51,21 @@ export const Text = ({
 
         liveLayers.get(id)?.set("value", newValue);
 
-        const embedding = await getEmbedding(newValue)
+        try {
+            const response = await fetch('/api/text-content', {
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        boardId: boardId,
+                        id: id,
+                        content: newValue
+                    })
+            })
+            if (!response.ok) throw Error("Status code: " + response.status);
 
-        await dasIndex.upsert([
-            {
-                id: id,
-                values: embedding,
-                metadata: {boardId: boardId},
-            },
-        ]);
+        } catch (e) {
+            console.error(e)
+        }
 
     }, []);
 

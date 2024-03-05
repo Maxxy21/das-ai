@@ -11,7 +11,7 @@ export interface StorageDocument {
     layers: Record<string, Layer>; // Using Layer type from your definitions
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
     try {
         const body = await request.json();
         // Extract messages and boardId from the request body
@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
             role: "assistant",
             content: "You are an intelligent start-up collaboration app. Here are the relevant notes based on your query:\n" + relevantNotesContent,
         };
-
 
 
         const response = await openai.chat.completions.create({

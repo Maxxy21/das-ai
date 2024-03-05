@@ -10,7 +10,7 @@ const convex = new ConvexHttpClient(
     process.env.NEXT_PUBLIC_CONVEX_URL!
 );
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
     const authorization = await auth();
     const user = await currentUser();
 

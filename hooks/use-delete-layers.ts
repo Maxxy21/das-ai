@@ -13,9 +13,20 @@ export const useDeleteLayers = () => {
         for (const id of selection) {
             liveLayers.delete(id);
             console.log("id", id);
-            await dasIndex.deleteOne(id);
-
             const index = liveLayerIds.indexOf(id);
+            try {
+                const response = await fetch('/api/delete-layer-content', {
+                    method: 'DELETE',
+                    body: JSON.stringify(
+                        {
+                            id: id,
+                        })
+                })
+                if (!response.ok) throw Error("Status code: " + response.status);
+
+            } catch (e) {
+                console.error(e)
+            }
 
             if (index !== -1) {
                 liveLayerIds.delete(index);
