@@ -7,13 +7,9 @@ export async function DELETE(request: Request) {
 
         await dasIndex.deleteOne(id);
 
-        return {
-            status: 200,
-        };
+        return Response.json({message: "Layer deleted"}, {status: 200});
     } catch (error) {
         console.error(error);
-        return {
-            status: 500,
-        };
+        return Response.json({error: "Internal server error"}, {status: 500});
     }
 }
