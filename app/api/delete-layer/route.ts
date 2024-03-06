@@ -4,6 +4,7 @@ export async function DELETE(request: Request) {
     try {
         const body = await request.json();
         const {id} = body;
+        console.log("id", id);
 
         await dasIndex.deleteOne(id);
 

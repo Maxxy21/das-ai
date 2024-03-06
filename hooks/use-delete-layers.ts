@@ -15,7 +15,7 @@ export const useDeleteLayers = () => {
             console.log("id", id);
             const index = liveLayerIds.indexOf(id);
             try {
-                const response = await fetch('/api/delete-layer-content', {
+                const response = await fetch('/api/delete-layer', {
                     method: 'DELETE',
                     body: JSON.stringify(
                         {

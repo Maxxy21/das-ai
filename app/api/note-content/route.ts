@@ -5,9 +5,10 @@ import {dasIndex} from "@/lib/db/pinecone";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const {boardId, id, value} = body;
+        const {boardId, id, content} = body;
 
-        const embedding = await getEmbedding(value);
+        console.log(body)
+        const embedding = await getEmbedding(content);
 
         await dasIndex.upsert([
             {

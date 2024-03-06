@@ -3,7 +3,6 @@ import {dasIndex} from "@/lib/db/pinecone";
 import {OpenAIStream, StreamingTextResponse} from "ai";
 import {ChatCompletionMessage} from "openai/resources/index.mjs";
 import {Layer, LayerType} from "@/types/canvas"; // Removed unused Layers import
-import {NextRequest} from "next/server";
 import {liveblocks} from "@/lib/liveblock";
 
 export interface StorageDocument {
