@@ -105,28 +105,6 @@ export const SelectionTools = memo(({
     }, [selection]);
 
 
-    // const handleDelete = async () => {
-    //   try {
-    //     const response = await fetch('/api/delete-layer', {
-    //       method: 'DELETE',
-    //       headers: {
-    //         'Content-Type': 'application/json', // Ensure you have the correct content type for JSON request body
-    //       },
-    //       body: JSON.stringify({
-    //         id: id,
-    //       }),
-    //     });
-    //     if (!response.ok) throw new Error("Status code: " + response.status);
-    //
-    //     // Handle success response
-    //     console.log("Layer deleted successfully");
-    //     // Here, you might want to update UI or state to reflect the deletion
-    //   } catch (error) {
-    //     console.error(error);
-    //     // Handle error (e.g., show an error message to the user)
-    //   }
-    // };
-
     const selectionBounds = useSelectionBounds();
 
     if (!selectionBounds) {
@@ -174,7 +152,6 @@ export const SelectionTools = memo(({
                     <Button
                         variant="board"
                         size="icon"
-                        // onClick={deleteLayers}
                         onClick={handleDelete}
                     >
                         <Trash2/>

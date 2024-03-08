@@ -14,19 +14,19 @@ export const useDeleteLayers = () => {
             liveLayers.delete(id);
             console.log("id", id);
             const index = liveLayerIds.indexOf(id);
-            try {
-                const response = await fetch('/api/delete-layer', {
-                    method: 'DELETE',
-                    body: JSON.stringify(
-                        {
-                            id: id,
-                        })
-                })
-                if (!response.ok) throw Error("Status code: " + response.status);
-
-            } catch (e) {
-                console.error(e)
-            }
+            // try {
+            //     const response = await fetch('/api/delete-layer', {
+            //         method: 'DELETE',
+            //         body: JSON.stringify(
+            //             {
+            //                 id: id,
+            //             })
+            //     })
+            //     if (!response.ok) throw Error("Status code: " + response.status);
+            //
+            // } catch (e) {
+            //     console.error(e)
+            // }
 
             if (index !== -1) {
                 liveLayerIds.delete(index);
