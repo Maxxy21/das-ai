@@ -39,7 +39,8 @@ export const send = mutation({
         // Send our message.
         await ctx.db.insert("messages", {body, author, boardId});
 
-        if (body.indexOf("@das") !== -1) {
+
+        // if (body.indexOf("@das") !== -1) {
             // Fetch the latest n messages to send as context.
             // The default order is by creation time.
             const messages = await ctx.db.query("messages").order("desc").take(10);
@@ -51,9 +52,26 @@ export const send = mutation({
                 body: "...",
                 boardId
             });
+
+            // const response = await fetch('/api/liveblocks-storage', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json', // Ensure you set the correct content type for your request
+            //     },
+            //     body: JSON.stringify(
+            //         {
+            //             boardId: boardId,
+            //             messages: messages
+            //         })
+            // })
+            // if (!response.ok) throw Error("Status code: " + response.status);
+            //
+            // const responseData = await response.json();
             // Schedule an action that calls ChatGPT and updates the message.
-            ctx.scheduler.runAfter(0, internal.openai.chat, {messages, messageId, boardId});
-        }
+
+            const data = "This is a test";
+            ctx.scheduler.runAfter(0, internal.openai.chat, {messages, messageId, content: data});
+        // }
     },
 });
 

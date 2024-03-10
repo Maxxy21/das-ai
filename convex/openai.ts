@@ -10,12 +10,12 @@ import openai from "../lib/openai";
 type ChatParams = {
     messages: Doc<"messages">[];
     messageId: Id<"messages">;
-    boardId: string;
+    content: string;
 };
 
 
 export const chat = internalAction({
-    handler: async (ctx, {messages, messageId,boardId}: ChatParams) => {
+    handler: async (ctx, {messages, messageId, content}: ChatParams) => {
         try {
             const stream = await openai.chat.completions.create({
                 model: "gpt-3.5-turbo", // "gpt-4" also works, but is so slow!
@@ -23,9 +23,9 @@ export const chat = internalAction({
                 messages: [
                     {
                         role: "system",
-                        content: "You are a terse bot in a group chat responding to q's.",
+                        content: "You are an intelligent start-up collaboration app. Here are the relevant notes based on your query:\n" + content,
                     },
-                    ...messages.map(({ body, author }) => ({
+                    ...messages.map(({body, author}) => ({
                         role:
                             author === "DAS" ? ("assistant" as const) : ("user" as const),
                         content: body,

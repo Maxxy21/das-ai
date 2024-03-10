@@ -10,7 +10,7 @@ export interface StorageDocument {
     layers: Record<string, Layer>; // Using Layer type from your definitions
 }
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
     try {
         const body = await request.json();
         const {boardId, messages} = body;
@@ -46,7 +46,6 @@ export async function GET(request: Request) {
         const relevantNotesContent = relevantLayers
             .map(layer => `Type: ${LayerType[layer.type]}\nValue: ${layer.value}\nPosition: (${layer.x}, ${layer.y})`)
             .join("\n\n");
-
 
         return new Response(JSON.stringify({content: relevantNotesContent}), {status: 200});
     } catch (error) {
