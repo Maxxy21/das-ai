@@ -5,8 +5,6 @@ import {ScrollArea} from "@/components/ui/scroll-area"
 import {Poppins} from "next/font/google";
 import {useMutation, useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api";
-import useStoreUserEffect from "@/hooks/use-store-user-effect";
-import {Textarea} from "@/components/ui/textarea";
 import {SendHorizonal, Trash2, X} from "lucide-react";
 
 const font = Poppins({
@@ -29,7 +27,6 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
 
     const messages = useQuery(api.messages.list);
     const sendMessage = useMutation(api.messages.send);
-
     const [newMessageText, setNewMessageText] = useState("");
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -50,8 +47,10 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
     return (
         <div
             className={cn(
-                "fixed bottom-2 right-2 h-[873px] w-[330px] bg-white rounded-md p-3 flex flex-col shadow-md",
-                open ? "block" : "hidden",
+                "fixed bottom-2 right-0 transition-transform transform duration-300",
+                open ? "translate-y-0" : "translate-y-[calc(100%+2rem)]", // This moves the chat box completely out of view
+                "w-[330px] bg-white rounded-md p-3 flex flex-col shadow-md overflow-hidden",
+                open ? "h-[873px]" : "h-0", // Collapse the height when not open
             )}
         >
             <div className='flex justify-between p-3 border-b'>
@@ -72,19 +71,22 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
                 </div>
             </div>
 
+
             <ScrollArea>
-                <div className="flex-1 p-2 space-y-2 w-1/3" style={{maxHeight: 'calc(873px - 150px)'}}>
+                <div className="flex-1 p-2 space-y-2 w-full" style={{maxHeight: 'calc(873px - 150px)'}}>
                     {messages?.map((message) => (
                         <article
                             key={message._id}
-                            className={`p-2 text-xs rounded-lg shadow 
-                            ${message.author === 'DAS' ? "bg-green-100 text-green-800"
-                                : message.author === NAME ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
+                            className={`flex ${message.author === NAME ? "justify-end" : "justify-start"}`}
                         >
-                            <div className="font-medium">{message.author}</div>
-                            <p className="mt-1">
-                                {message.body}
-                            </p>
+                            <div
+                                className={`p-2 text-xs rounded-lg shadow max-w-xs ${message.author === 'DAS' ? "bg-green-100 text-green-800" : message.author === NAME ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
+                            >
+                                <div className="font-medium">{message.author}</div>
+                                <p className="mt-1 break-words">
+                                    {message.body}
+                                </p>
+                            </div>
                         </article>
                     ))}
                 </div>
@@ -92,30 +94,32 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
 
 
             {/* Input form */}
-            <form
-                onSubmit={async (e) => {
-                    e.preventDefault();
-                    await sendMessage({body: newMessageText, author: NAME});
-                    setNewMessageText("");
-                }}
-                className="flex items-center p-2"
-            >
-                <textarea
-                    rows={2}
-                    value={newMessageText}
-                    onChange={(e) => setNewMessageText(e.target.value)}
-                    placeholder="Say something..."
-                    className="flex-grow bg-white-100 p-4 text-sm rounded-lg bottom-0.5 border border-gray-300 focus:outline-blue-500 resize-none shadow"
-                    style={{minHeight: '40px'}}
-                />
-                <button
-                    type="submit"
-                    disabled={!newMessageText}
-                    className="ml-2 bg-blue-500 p-2 text-white rounded-full shadow flex items-center justify-center"
+            <div className="p-2 bottom-1 absolute w-[315px]">
+                <form
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        await sendMessage({body: newMessageText, author: NAME});
+                        setNewMessageText("");
+                    }}
+                    className="flex items-center"
                 >
-                    <SendHorizonal size={20}/>
-                </button>
-            </form>
+                    <textarea
+                        rows={2}
+                        value={newMessageText}
+                        onChange={(e) => setNewMessageText(e.target.value)}
+                        placeholder="Write a message..."
+                        className="flex-grow bg-gray-100 p-4 text-sm rounded-lg border border-gray-300 focus:outline-none resize-none shadow"
+                        style={{minHeight: '40px'}}
+                    />
+                    <button
+                        type="submit"
+                        disabled={!newMessageText}
+                        className="ml-2 bg-blue-500 p-2 text-white rounded-full shadow flex items-center justify-center"
+                    >
+                        <SendHorizonal size={20}/>
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
