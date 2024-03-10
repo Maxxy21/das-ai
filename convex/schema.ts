@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { defineSchema, defineTable } from "convex/server";
+import {v} from "convex/values";
+import {defineSchema, defineTable} from "convex/server";
 
 export default defineSchema({
     boards: defineTable({
@@ -23,4 +23,16 @@ export default defineSchema({
         .index("by_user_org", ["userId", "orgId"])
         .index("by_user_board", ["userId", "boardId"])
         .index("by_user_board_org", ["userId", "boardId", "orgId"])
+    ,
+    messages: defineTable({
+        body: v.string(),
+        author: v.string(),
+    })
+    ,
+    users: defineTable({
+        name: v.string(),
+        tokenIdentifier: v.string(),
+    })
+        .index("by_token", ["tokenIdentifier"])
+
 });

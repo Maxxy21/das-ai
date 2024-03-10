@@ -1,9 +1,7 @@
 import {auth, currentUser} from "@clerk/nextjs";
-import {Liveblocks} from "@liveblocks/node";
 import {ConvexHttpClient} from "convex/browser";
 
 import {api} from "@/convex/_generated/api";
-import {NextRequest} from "next/server";
 import {liveblocks} from "@/lib/liveblock";
 
 const convex = new ConvexHttpClient(
@@ -26,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     const userInfo = {
-        name: user.firstName || "Team mate",
+        name: user.firstName || "Teammate",
         picture: user.imageUrl,
     };
 

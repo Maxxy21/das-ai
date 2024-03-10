@@ -65,7 +65,6 @@ export async function POST(request: Request) {
             messages: [systemMessage, ...messagesTruncated],
         });
 
-        // Assuming OpenAIStream and StreamingTextResponse are correctly implemented
         const stream = OpenAIStream(response);
         return new StreamingTextResponse(stream);
     } catch

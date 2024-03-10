@@ -7,7 +7,7 @@ interface BoardIdPageProps {
   params: {
     boardId: string;
   };
-};
+}
 
 const BoardIdPage = ({
   params,

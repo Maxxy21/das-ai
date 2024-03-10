@@ -2,11 +2,17 @@ import {cn} from "@/lib/utils";
 import {useUser} from "@clerk/nextjs";
 import {Message} from "ai";
 import {useChat} from "ai/react";
-import {Bot, Trash, XCircle} from "lucide-react";
+import {Bot, Trash2, X} from "lucide-react";
 import Image from "next/image";
 import {useEffect, useRef} from "react";
-import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import {Poppins} from "next/font/google";
+
+const font = Poppins({
+    subsets: ["latin"],
+    weight: ["600"],
+});
+
 
 interface ChatBoxProps {
     open: boolean;
@@ -47,15 +53,36 @@ export default function ChatBox({open, onClose, boardId}: ChatBoxProps) {
     return (
         <div
             className={cn(
-                "bottom-0 right-0 z-10 w-full max-w-[500px] p-1 xl:right-36",
+                "absolute h-[873px] w-[330px] bottom-2 right-2 bg-white rounded-md p-3 flex flex-col justify-between shadow-md",
                 open ? "fixed" : "hidden",
             )}
         >
-            <button onClick={onClose} className="mb-1 ms-auto block">
-                <XCircle size={30}/>
-            </button>
-            <div className="flex h-[600px] flex-col rounded border bg-background shadow-xl">
-                <div className="mt-3 h-full overflow-y-auto px-3" ref={scrollRef}>
+            <div className='w-full flex justify-between'>
+                <h1 className={cn(
+                    "font-semibold text-2xl ml-2 text-black",
+                    font.className,
+                )}>
+                    DAS
+                </h1>
+                <div className='flex'>
+
+                    <button
+                        className="mb-1 ms-auto block"
+                        onClick={() => setMessages([])}
+                    >
+                        <Trash2/>
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="mb-1 ms-auto block"
+                    >
+                        <X/>
+                    </button>
+
+                </div>
+            </div>
+            <div className="flex flex-col h-[800px]">
+                <div className="flex-grow overflow-y-auto px-3 my-3" ref={scrollRef}>
                     {messages.map((message) => (
                         <ChatMessage message={message} key={message.id}/>
                     ))}
@@ -78,29 +105,21 @@ export default function ChatBox({open, onClose, boardId}: ChatBoxProps) {
                     {!error && messages.length === 0 && (
                         <div className="flex h-full items-center justify-center gap-3">
                             <Bot/>
-                            Ask the AI a question about your canvas
+                            Ask the bot a question to get started
                         </div>
                     )}
                 </div>
-                <form onSubmit={handleSubmit} className="m-3 flex gap-1">
-                    <Button
-                        title="Clear chat"
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0"
-                        type="button"
-                        onClick={() => setMessages([])}
-                    >
-                        <Trash/>
-                    </Button>
-                    <Input
-                        value={input}
-                        onChange={handleInputChange}
-                        placeholder="Say something..."
-                        ref={inputRef}
-                    />
-                    <Button type="submit">Send</Button>
-                </form>
+                <div className="mb-3">
+                    <form onSubmit={handleSubmit} className="flex gap-1">
+                        <Input
+                            value={input}
+                            onChange={handleInputChange}
+                            placeholder="Say something..."
+                            ref={inputRef}
+                            className="flex-grow rounded-full p-2 border-2 border-gray-300"
+                        />
+                    </form>
+                </div>
             </div>
         </div>
     );
@@ -114,6 +133,7 @@ function ChatMessage({
     const {user} = useUser();
 
     const isAiMessage = role === "assistant";
+    const imageSize = 24; // Smaller image size in pixels
 
     return (
         <div
@@ -125,7 +145,7 @@ function ChatMessage({
             {isAiMessage && <Bot className="mr-2 shrink-0"/>}
             <p
                 className={cn(
-                    "whitespace-pre-line rounded-md border px-3 py-2",
+                    "text-sm whitespace-pre-line rounded-md border px-1 py-1",
                     isAiMessage ? "bg-background" : "bg-primary text-primary-foreground",
                 )}
             >
@@ -135,9 +155,10 @@ function ChatMessage({
                 <Image
                     src={user.imageUrl}
                     alt="User image"
-                    width={100}
-                    height={100}
-                    className="ml-2 h-10 w-10 rounded-full object-cover"
+                    width={imageSize}
+                    height={imageSize}
+                    className="ml-2 rounded-full object-cover"
+                    style={{width: imageSize, height: imageSize}} // Inline styles for size
                 />
             )}
         </div>
