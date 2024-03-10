@@ -24,7 +24,7 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
 
     const {user} = useUser()
 
-    const NAME = user?.fullName || "Anonymous";
+    const NAME = user?.firstName || "Anonymous";
 
     const messages = useQuery(api.messages.list);
     const sendMessage = useMutation(api.messages.send);
