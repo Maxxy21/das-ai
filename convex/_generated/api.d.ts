@@ -18,7 +18,6 @@ import type * as board from "../board.js";
 import type * as boards from "../boards.js";
 import type * as messages from "../messages.js";
 import type * as openai from "../openai.js";
-import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -33,7 +32,6 @@ declare const fullApi: ApiFromModules<{
   boards: typeof boards;
   messages: typeof messages;
   openai: typeof openai;
-  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
