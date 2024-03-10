@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all dev:init --parallel dev:frontend dev:backend",
-    "dev:frontend": "next dev",
-    "dev:backend": "convex dev",
-    "dev:init": "convex dev --until-success && convex dashboard",
+    "dev": "next dev",
     "build": " next build",
     "start": "next start",
     "lint": "next lint"
