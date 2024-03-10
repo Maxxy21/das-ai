@@ -2,7 +2,6 @@
 import {useState} from "react";
 import Image from 'next/image';
 import {Hint} from "@/components/hint";
-import ChatBox from "./chat-box";
 import ChatInput from "@/app/board/[boardId]/_components/chat-input";
 
 

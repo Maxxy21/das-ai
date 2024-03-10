@@ -27,6 +27,7 @@ export default defineSchema({
     messages: defineTable({
         body: v.string(),
         author: v.string(),
+        boardId: v.string(),
     })
     ,
     users: defineTable({
@@ -34,5 +35,4 @@ export default defineSchema({
         tokenIdentifier: v.string(),
     })
         .index("by_token", ["tokenIdentifier"])
-
 });

@@ -15,32 +15,17 @@ type ChatParams = {
 
 
 export const chat = internalAction({
-    handler: async (ctx, {messages, messageId, boardId}: ChatParams) => {
+    handler: async (ctx, {messages, messageId,boardId}: ChatParams) => {
         try {
-            const response = await fetch('/api/liveblocks-storage', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json', // Ensure you set the correct content type for your request
-                },
-                body: JSON.stringify(
-                    {
-                        boardId: boardId,
-                        messages: messages
-                    })
-            })
-            if (!response.ok) throw Error("Status code: " + response.status);
-
-            const responseData = await response.json();
-
             const stream = await openai.chat.completions.create({
                 model: "gpt-3.5-turbo", // "gpt-4" also works, but is so slow!
                 stream: true,
                 messages: [
                     {
                         role: "system",
-                        content: "You are an intelligent start-up collaboration app. Here are the relevant notes based on your query:\n" + responseData.content,
+                        content: "You are a terse bot in a group chat responding to q's.",
                     },
-                    ...messages.map(({body, author}) => ({
+                    ...messages.map(({ body, author }) => ({
                         role:
                             author === "DAS" ? ("assistant" as const) : ("user" as const),
                         content: body,
@@ -51,7 +36,7 @@ export const chat = internalAction({
             for await (const part of stream) {
                 if (part.choices[0].delta?.content) {
                     body += part.choices[0].delta.content;
-                    // Alternatively we could wait for complete words / sentences.
+                    // Alternatively you could wait for complete words / sentences.
                     // Here we send an update on every stream message.
                     await ctx.runMutation(internal.messages.update, {
                         messageId,
