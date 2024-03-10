@@ -1,28 +1,23 @@
-import openai, {getEmbedding} from "@/lib/openai";
-import {dasIndex} from "@/lib/db/pinecone";
-import {OpenAIStream, StreamingTextResponse} from "ai";
-import {ChatCompletionMessage} from "openai/resources/index.mjs";
-import {Layer, LayerType} from "@/types/canvas"; // Removed unused Layers import
 import {liveblocks} from "@/lib/liveblock";
+import {getEmbedding} from "@/lib/openai";
+import {Doc} from "@/convex/_generated/dataModel";
+import {dasIndex} from "@/lib/db/pinecone";
+import {Layer, LayerType} from "@/types/canvas";
+
 
 export interface StorageDocument {
     layerIds: string[];
     layers: Record<string, Layer>; // Using Layer type from your definitions
 }
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
     try {
         const body = await request.json();
-        // Extract messages and boardId from the request body
-        const {messages, boardId} = body;
+        const {boardId, messages} = body;
 
-        if (!boardId) {
-            return new Response(JSON.stringify({error: "Board ID not found"}), {status: 404});
-        }
 
-        const messagesTruncated: ChatCompletionMessage[] = messages.slice(-6);
         const embedding = await getEmbedding(
-            messagesTruncated.map((message) => message.content).join("\n"),
+            messages.map((message: Doc<"messages">) => message.body).join("\n"),
         );
 
         const storage = await liveblocks.getStorageDocument(boardId, "json") as unknown as StorageDocument;
@@ -53,22 +48,8 @@ export async function POST(request: Request) {
             .join("\n\n");
 
 
-        const systemMessage: ChatCompletionMessage = {
-            role: "assistant",
-            content: "You are an intelligent start-up collaboration app. Here are the relevant notes based on your query:\n" + relevantNotesContent,
-        };
-
-
-        const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            stream: true,
-            messages: [systemMessage, ...messagesTruncated],
-        });
-
-        const stream = OpenAIStream(response);
-        return new StreamingTextResponse(stream);
-    } catch
-        (error) {
+        return new Response(JSON.stringify({content: relevantNotesContent}), {status: 200});
+    } catch (error) {
         console.error(error);
         return new Response(JSON.stringify({error: "Internal server error"}), {status: 500});
     }

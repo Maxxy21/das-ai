@@ -6,6 +6,7 @@ import {Poppins} from "next/font/google";
 import {useMutation, useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api";
 import {SendHorizonal, Trash2, X} from "lucide-react";
+import {Textarea} from "@/components/ui/textarea";
 
 const font = Poppins({
     subsets: ["latin"],
@@ -50,7 +51,7 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
                 "fixed bottom-2 right-0 transition-transform transform duration-300",
                 open ? "translate-y-0" : "translate-y-[calc(100%+2rem)]", // This moves the chat box completely out of view
                 "w-[330px] bg-white rounded-md p-3 flex flex-col shadow-md overflow-hidden",
-                open ? "h-[873px]" : "h-0", // Collapse the height when not open
+                open ? "h-[873px]" : "h-0", // This hides the chat box
             )}
         >
             <div className='flex justify-between p-3 border-b'>
@@ -80,7 +81,10 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
                             className={`flex ${message.author === NAME ? "justify-end" : "justify-start"}`}
                         >
                             <div
-                                className={`p-2 text-xs rounded-lg shadow max-w-xs ${message.author === 'DAS' ? "bg-green-100 text-green-800" : message.author === NAME ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
+                                className={`p-2 text-xs rounded-lg shadow max-w-xs 
+                                ${message.author === 'DAS' ? "bg-green-100 text-green-800"
+                                    : message.author === NAME ? "bg-blue-500 text-white"
+                                        : "bg-gray-200 text-gray-800"}`}
                             >
                                 <div className="font-medium">{message.author}</div>
                                 <p className="mt-1 break-words">
@@ -94,21 +98,22 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
 
 
             {/* Input form */}
-            <div className="p-2 bottom-1 absolute w-[315px]">
+            <div className="p-2 bottom-0 absolute w-[315px]">
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        await sendMessage({body: newMessageText, author: NAME});
+                        await sendMessage({body: newMessageText, author: NAME, boardId});
                         setNewMessageText("");
                     }}
                     className="flex items-center"
                 >
-                    <textarea
+                    <Textarea
                         rows={2}
                         value={newMessageText}
                         onChange={(e) => setNewMessageText(e.target.value)}
                         placeholder="Write a message..."
-                        className="flex-grow bg-gray-100 p-4 text-sm rounded-lg border border-gray-300 focus:outline-none resize-none shadow"
+                        className="flex-grow bg-gray-100 p-4 text-sm rounded-lg border border-bg-gray-500
+                        focus:outline-none resize-none shadow"
                         style={{minHeight: '40px'}}
                     />
                     <button
