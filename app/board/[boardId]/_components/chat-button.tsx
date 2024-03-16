@@ -7,10 +7,12 @@ import ChatInput from "@/app/board/[boardId]/_components/chat-input";
 
 interface ChatButtonProps {
     boardId: string;
+    isChatOpen: boolean;
+    setChatOpen: (open: boolean) => void;
 }
 
-export const ChatButton = ({boardId}: ChatButtonProps) => {
-    const [chatBoxOpen, setChatBoxOpen] = useState(false);
+export const ChatButton = ({boardId, setChatOpen, isChatOpen}: ChatButtonProps) => {
+
 
     return (
         <div className="absolute h-12 bottom-2 right-2 bg-white rounded-md p-3 flex items-center shadow-md">
@@ -20,10 +22,10 @@ export const ChatButton = ({boardId}: ChatButtonProps) => {
                     alt="Board logo"
                     height={32}
                     width={32}
-                    onClick={() => setChatBoxOpen(true)}
+                    onClick={() => setChatOpen(!isChatOpen)}
                 />
             </Hint>
-            <ChatInput open={chatBoxOpen} onClose={() => setChatBoxOpen(false)} boardId={boardId}/>
+            <ChatInput open={isChatOpen} onClose={() => setChatOpen(false)} boardId={boardId}/>
         </div>
 
     );

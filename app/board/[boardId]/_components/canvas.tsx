@@ -58,6 +58,8 @@ export const Canvas = ({
         b: 0,
     });
     const [scale, setScale] = useState(1);
+    const [chatBoxOpen, setChatBoxOpen] = useState(false);
+
 
     const zoomIntensity = 0.1;
 
@@ -510,7 +512,11 @@ export const Canvas = ({
         >
             <Info boardId={boardId}/>
             <Participants/>
-            <ChatButton boardId={boardId}/>
+            <ChatButton
+                boardId={boardId}
+                isChatOpen={chatBoxOpen}
+                setChatOpen={setChatBoxOpen}
+            />
             <Toolbar
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}
@@ -524,12 +530,14 @@ export const Canvas = ({
                 setLastUsedColor={setLastUsedColor}
             />
 
-            <ZoomButtons
-                zoomIn={zoomIn}
-                zoomOut={zoomOut}
-                resetZoom={resetZoom}
-                scale={scale}
-            />
+            {!chatBoxOpen && (
+                <ZoomButtons
+                    zoomIn={zoomIn}
+                    zoomOut={zoomOut}
+                    resetZoom={resetZoom}
+                    scale={scale}
+                />
+            )}
 
 
             <svg
