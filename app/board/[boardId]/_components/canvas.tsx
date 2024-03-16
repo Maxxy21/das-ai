@@ -33,7 +33,8 @@ import {LayerPreview} from "./layer-preview";
 import {SelectionBox} from "./selection-box";
 import {SelectionTools} from "./selection-tools";
 import {CursorsPresence} from "./cursors-presence";
-import {ChatButton} from "@/app/board/[boardId]/_components/chat-button";
+import {ChatButton} from "./chat-button";
+import {ZoomButtons} from "./zoom-buttons";
 
 const MAX_LAYERS = 100;
 
@@ -57,6 +58,21 @@ export const Canvas = ({
         b: 0,
     });
     const [scale, setScale] = useState(1);
+
+    const zoomIntensity = 0.1;
+
+    const zoomIn = () => {
+        setScale((prevScale) => Math.min(prevScale * (1 + zoomIntensity), 4));
+    };
+
+    const zoomOut = () => {
+        setScale((prevScale) => Math.max(prevScale * (1 - zoomIntensity), 0.125));
+    };
+
+    const resetZoom = () => {
+        setScale(1); // Reset scale to default
+        setCamera({x: 0, y: 0}); // Reset camera position to default
+    };
 
 
     useDisableScrollBounce();
@@ -308,7 +324,7 @@ export const Canvas = ({
     const onWheel = useCallback((e: React.WheelEvent) => {
         e.preventDefault();
 
-        const { offsetX, offsetY } = e.nativeEvent;
+        const {offsetX, offsetY} = e.nativeEvent;
         const zoomIntensity = 0.1;
         const direction = e.deltaY < 0 ? 1 : -1;
         const factor = Math.exp(direction * zoomIntensity);
@@ -321,10 +337,9 @@ export const Canvas = ({
         const newCameraY = offsetY - (offsetY - camera.y) * factor;
 
         // Set new camera and scale
-        setCamera({ x: newCameraX, y: newCameraY });
+        setCamera({x: newCameraX, y: newCameraY});
         setScale(newScale);
     }, [scale, camera.x, camera.y]);
-
 
 
     const onPointerMove = useMutation((
@@ -507,6 +522,13 @@ export const Canvas = ({
             <SelectionTools
                 camera={camera}
                 setLastUsedColor={setLastUsedColor}
+            />
+
+            <ZoomButtons
+                zoomIn={zoomIn}
+                zoomOut={zoomOut}
+                resetZoom={resetZoom}
+                scale={scale}
             />
 
 

@@ -4,6 +4,7 @@ import {InfoSkeleton} from "./info";
 import {ToolbarSkeleton} from "./toolbar";
 import {ParticipantsSkeleton} from "./participants";
 import {ChatButtonSkeleton} from "./chat-button";
+import {ZoomButtonsSkeleton} from "@/app/board/[boardId]/_components/zoom-buttons";
 
 export const Loading = () => {
     return (
@@ -14,6 +15,7 @@ export const Loading = () => {
             <InfoSkeleton/>
             <ParticipantsSkeleton/>
             <ChatButtonSkeleton/>
+            <ZoomButtonsSkeleton/>
             <ToolbarSkeleton/>
         </main>
     );
