@@ -1,17 +1,17 @@
 "use client";
 
 import {nanoid} from "nanoid";
-import {useCallback, useMemo, useState, useEffect} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {LiveObject} from "@liveblocks/client";
 
 import {
-    useHistory,
-    useCanUndo,
     useCanRedo,
+    useCanUndo,
+    useHistory,
     useMutation,
-    useStorage,
     useOthersMapped,
     useSelf,
+    useStorage,
 } from "@/liveblocks.config";
 import {
     colorToCss,
@@ -21,16 +21,7 @@ import {
     pointerEventToCanvasPoint,
     resizeBounds,
 } from "@/lib/utils";
-import {
-    Camera,
-    CanvasMode,
-    CanvasState,
-    Color,
-    LayerType,
-    Point,
-    Side,
-    XYWH,
-} from "@/types/canvas";
+import {Camera, CanvasMode, CanvasState, Color, LayerType, Point, Side, XYWH,} from "@/types/canvas";
 import {useDisableScrollBounce} from "@/hooks/use-disable-scroll-bounce";
 import {useDeleteLayers} from "@/hooks/use-delete-layers";
 
@@ -65,6 +56,7 @@ export const Canvas = ({
         g: 0,
         b: 0,
     });
+    const [scale, setScale] = useState(1);
 
 
     useDisableScrollBounce();
@@ -265,7 +257,7 @@ export const Canvas = ({
         if (layer) {
             layer.update(bounds);
         }
-        ;
+
     }, [canvasState]);
 
     const onResizeHandlePointerDown = useCallback((
@@ -280,12 +272,60 @@ export const Canvas = ({
         });
     }, [history]);
 
+    // const onWheel = useCallback((e: React.WheelEvent) => {
+    //     setCamera((camera) => ({
+    //         x: camera.x - e.deltaX,
+    //         y: camera.y - e.deltaY,
+    //     }));
+    // }, []);
+
+    // const onWheel = useCallback((e: React.WheelEvent) => {
+    //     e.preventDefault();
+    //     const rect = e.currentTarget.getBoundingClientRect();
+    //     const mouseX = e.clientX - rect.left; // Get the mouse position relative to the SVG
+    //     const mouseY = e.clientY - rect.top;
+    //
+    //     const zoomIntensity = 0.1;
+    //     const wheel = e.deltaY < 0 ? 1 : -1; // Wheel direction
+    //     const zoom = Math.exp(wheel * zoomIntensity);
+    //
+    //     // Update the scale
+    //     let newScale = scale * zoom;
+    //     newScale = Math.min(Math.max(0.125, newScale), 4); // Clamp the scale
+    //
+    //     // Calculate new camera positions
+    //     const cx = (mouseX - camera.x) / scale; // Point under cursor
+    //     const cy = (mouseY - camera.y) / scale;
+    //
+    //     let newX = mouseX - (cx * newScale);
+    //     let newY = mouseY - (cy * newScale);
+    //
+    //     // Update camera and scale
+    //     setCamera({ x: newX, y: newY });
+    //     setScale(newScale);
+    // }, [scale, camera]);
+
     const onWheel = useCallback((e: React.WheelEvent) => {
-        setCamera((camera) => ({
-            x: camera.x - e.deltaX,
-            y: camera.y - e.deltaY,
-        }));
-    }, []);
+        e.preventDefault();
+
+        const { offsetX, offsetY } = e.nativeEvent;
+        const zoomIntensity = 0.1;
+        const direction = e.deltaY < 0 ? 1 : -1;
+        const factor = Math.exp(direction * zoomIntensity);
+
+        // Calculate new scale
+        const newScale = scale * factor;
+
+        // Adjust camera to keep the point under the cursor in the same place after scaling
+        const newCameraX = offsetX - (offsetX - camera.x) * factor;
+        const newCameraY = offsetY - (offsetY - camera.y) * factor;
+
+        // Set new camera and scale
+        setCamera({ x: newCameraX, y: newCameraY });
+        setScale(newScale);
+    }, [scale, camera.x, camera.y]);
+
+
 
     const onPointerMove = useMutation((
             {setMyPresence},
@@ -468,6 +508,8 @@ export const Canvas = ({
                 camera={camera}
                 setLastUsedColor={setLastUsedColor}
             />
+
+
             <svg
                 className="h-[100vh] w-[100vw]"
                 onWheel={onWheel}
@@ -478,7 +520,7 @@ export const Canvas = ({
             >
                 <g
                     style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px)`
+                        transform: `translate(${camera.x}px, ${camera.y}px) scale(${scale})`
                     }}
                 >
                     {layerIds.map((layerId) => (
