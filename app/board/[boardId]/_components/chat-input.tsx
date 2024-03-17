@@ -51,7 +51,7 @@ export default function ChatInput({open, onClose, boardId}: ChatInputProps) {
                 "fixed bottom-2 right-2 transition-transform transform duration-300",
                 open ? "translate-y-0" : "translate-y-[calc(100%+2rem)]", // This moves the chat box completely out of view
                 "w-[330px] bg-white rounded-md p-3 flex flex-col shadow-md overflow-hidden",
-                open ? "h-[873px]" : "h-0", // This hides the chat box
+                open ? "h-[873px]" : "h-0",
             )}
         >
             <div className='flex justify-between p-3 border-b'>
