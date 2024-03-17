@@ -15,7 +15,7 @@ import {ColorPicker} from "./color-picker";
 interface SelectionToolsProps {
     camera: Camera;
     setLastUsedColor: (color: Color) => void;
-};
+}
 
 export const SelectionTools = memo(({
                                         camera,

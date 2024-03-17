@@ -132,4 +132,23 @@ export enum CanvasMode {
     Pencil,
 };
 
+export type RawLayerData = {
+    liveblocksType: string;
+    data: {
+        layerIds: {
+            liveblocksType: string;
+            data: string[];
+        };
+        layers: {
+            liveblocksType: string;
+            data: {
+                [key: string]: {
+                    liveblocksType: string;
+                    data: Layer;
+                };
+            };
+        };
+    };
+};
+
 export type Layer = RectangleLayer | EllipseLayer | PathLayer | TextLayer | NoteLayer

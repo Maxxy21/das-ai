@@ -1,19 +1,20 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import {LiveList, LiveMap, LiveObject} from "@liveblocks/client";
 
-import { 
-  Camera, 
-  Color, 
-  Layer, 
-  LayerType, 
-  PathLayer, 
-  Point, 
-  Side, 
+import {
+  Camera,
+  Color,
+  Layer,
+  LayerType,
+  PathLayer,
+  Point, RawLayerData,
+  Side,
   XYWH
 } from "@/types/canvas";
 
 const COLORS = [
-  "#DC2626", 
+  "#DC2626",
   "#D97706", 
   "#059669", 
   "#7C3AED", 
@@ -180,3 +181,21 @@ export function getSvgPathFromStroke(stroke: number[][]) {
   d.push("Z");
   return d.join(" ");
 };
+
+
+
+export const convertRawLayers = (rawData: RawLayerData) => {
+  const layerIds = new LiveList<string>(rawData.data.layerIds.data);
+  const layers = new LiveMap<string, LiveObject<Layer>>();
+
+  Object.entries(rawData.data.layers.data).forEach(([id, rawLayer]) => {
+    if (rawLayer.liveblocksType !== "LiveObject") {
+      throw new Error("Expected LiveObject in layers");
+    }
+    const liveLayer = new LiveObject<Layer>(rawLayer.data as Layer);
+    layers.set(id, liveLayer);
+  });
+
+  return {layerIds, layers};
+
+}
