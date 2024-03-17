@@ -3,6 +3,8 @@
 import {nanoid} from "nanoid";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {LiveObject} from "@liveblocks/client";
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 
 import {
     useCanRedo,
@@ -496,6 +498,7 @@ export const Canvas = ({
                         break;
                     }
                 }
+
             }
         }
 
