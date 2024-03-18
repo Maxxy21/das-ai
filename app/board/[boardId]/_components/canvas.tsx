@@ -3,7 +3,6 @@
 import {nanoid} from "nanoid";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {LiveObject} from "@liveblocks/client";
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 import {
@@ -26,6 +25,7 @@ import {
 import {Camera, CanvasMode, CanvasState, Color, LayerType, Point, Side, XYWH,} from "@/types/canvas";
 import {useDisableScrollBounce} from "@/hooks/use-disable-scroll-bounce";
 import {useDeleteLayers} from "@/hooks/use-delete-layers";
+import {useSelectAllLayers} from "@/hooks/use-select-layers";
 
 import {Info} from "./info";
 import {Path} from "./path";
@@ -37,6 +37,7 @@ import {SelectionTools} from "./selection-tools";
 import {CursorsPresence} from "./cursors-presence";
 import {ChatButton} from "./chat-button";
 import {ZoomButtons} from "./zoom-buttons";
+
 
 const MAX_LAYERS = 100;
 
@@ -78,6 +79,11 @@ export const Canvas = ({
         setCamera({x: 0, y: 0}); // Reset camera position to default
     };
 
+    // const selectAllLayers = useMutation(({ storage, setMyPresence }) => {
+    //     const liveLayerIds = storage.get("layerIds");
+    //     setMyPresence({ selection: liveLayerIds.toArray() }, { addToHistory: true });
+    // });
+
 
     useDisableScrollBounce();
     const history = useHistory();
@@ -112,6 +118,7 @@ export const Canvas = ({
         setCanvasState({mode: CanvasMode.None});
     }, [lastUsedColor]);
 
+
     const translateSelectedLayers = useMutation((
             {storage, self},
             point: Point,
@@ -144,6 +151,7 @@ export const Canvas = ({
             canvasState,
         ]);
 
+
     const unselectLayers = useMutation((
         {self, setMyPresence}
     ) => {
@@ -169,10 +177,12 @@ export const Canvas = ({
             layers,
             origin,
             current,
+            scale,
+            camera
         );
 
         setMyPresence({selection: ids});
-    }, [layerIds]);
+    }, [layerIds, scale, camera]);
 
     const startMultiSelection = useCallback((
         current: Point,
@@ -292,41 +302,10 @@ export const Canvas = ({
         });
     }, [history]);
 
-    // const onWheel = useCallback((e: React.WheelEvent) => {
-    //     setCamera((camera) => ({
-    //         x: camera.x - e.deltaX,
-    //         y: camera.y - e.deltaY,
-    //     }));
-    // }, []);
-
-    // const onWheel = useCallback((e: React.WheelEvent) => {
-    //     e.preventDefault();
-    //     const rect = e.currentTarget.getBoundingClientRect();
-    //     const mouseX = e.clientX - rect.left; // Get the mouse position relative to the SVG
-    //     const mouseY = e.clientY - rect.top;
-    //
-    //     const zoomIntensity = 0.1;
-    //     const wheel = e.deltaY < 0 ? 1 : -1; // Wheel direction
-    //     const zoom = Math.exp(wheel * zoomIntensity);
-    //
-    //     // Update the scale
-    //     let newScale = scale * zoom;
-    //     newScale = Math.min(Math.max(0.125, newScale), 4); // Clamp the scale
-    //
-    //     // Calculate new camera positions
-    //     const cx = (mouseX - camera.x) / scale; // Point under cursor
-    //     const cy = (mouseY - camera.y) / scale;
-    //
-    //     let newX = mouseX - (cx * newScale);
-    //     let newY = mouseY - (cy * newScale);
-    //
-    //     // Update camera and scale
-    //     setCamera({ x: newX, y: newY });
-    //     setScale(newScale);
-    // }, [scale, camera]);
 
     const onWheel = useCallback((e: React.WheelEvent) => {
         e.preventDefault();
+        e.stopPropagation(); // Stop the event from bubbling up to parent elements
 
         const {offsetX, offsetY} = e.nativeEvent;
         const zoomIntensity = 0.1;
@@ -352,7 +331,7 @@ export const Canvas = ({
         ) => {
             e.preventDefault();
 
-            const current = pointerEventToCanvasPoint(e, camera);
+            const current = pointerEventToCanvasPoint(e, camera, scale);
 
             if (canvasState.mode === CanvasMode.Pressing) {
                 startMultiSelection(current, canvasState.origin);
@@ -385,7 +364,7 @@ export const Canvas = ({
     const onPointerDown = useCallback((
         e: React.PointerEvent,
     ) => {
-        const point = pointerEventToCanvasPoint(e, camera);
+        const point = pointerEventToCanvasPoint(e, camera, scale);
 
         if (canvasState.mode === CanvasMode.Inserting) {
             return;
@@ -397,13 +376,13 @@ export const Canvas = ({
         }
 
         setCanvasState({origin: point, mode: CanvasMode.Pressing});
-    }, [camera, canvasState.mode, setCanvasState, startDrawing]);
+    }, [camera, canvasState.mode, setCanvasState, startDrawing, scale]);
 
     const onPointerUp = useMutation((
             {},
             e
         ) => {
-            const point = pointerEventToCanvasPoint(e, camera);
+            const point = pointerEventToCanvasPoint(e, camera, scale);
 
             if (
                 canvasState.mode === CanvasMode.None ||
@@ -452,7 +431,7 @@ export const Canvas = ({
             history.pause();
             e.stopPropagation();
 
-            const point = pointerEventToCanvasPoint(e, camera);
+            const point = pointerEventToCanvasPoint(e, camera, scale);
 
             if (!self.presence.selection.includes(layerId)) {
                 setMyPresence({selection: [layerId]}, {addToHistory: true});
@@ -481,6 +460,7 @@ export const Canvas = ({
     }, [selections]);
 
     const deleteLayers = useDeleteLayers();
+    const selectAllLayers = useSelectAllLayers();
 
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
@@ -488,6 +468,13 @@ export const Canvas = ({
                 // case "Backspace":
                 //   deleteLayers();
                 //   break;
+                case "a": {
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        selectAllLayers();
+                    }
+                    break;
+                }
                 case "z": {
                     if (e.ctrlKey || e.metaKey) {
                         if (e.shiftKey) {
@@ -507,7 +494,7 @@ export const Canvas = ({
         return () => {
             document.removeEventListener("keydown", onKeyDown)
         }
-    }, [deleteLayers, history]);
+    }, [deleteLayers, history, selectAllLayers]);
 
     return (
         <main
@@ -544,16 +531,19 @@ export const Canvas = ({
 
 
             <svg
-                className="h-[100vh] w-[100vw]"
+                className="h-[100vh] w-[100vw] touch-none"
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerDown={onPointerDown}
                 onPointerUp={onPointerUp}
+                style={{
+                    touchAction: 'none', // Prevent default touch actions
+                }}
             >
                 <g
                     style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px) scale(${scale})`
+                        transform: `translate(${camera.x}px, ${camera.y}px) scale(${scale})`,
                     }}
                 >
                     {layerIds.map((layerId) => (
