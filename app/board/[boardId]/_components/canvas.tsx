@@ -518,6 +518,7 @@ export const Canvas = ({
             <SelectionTools
                 camera={camera}
                 setLastUsedColor={setLastUsedColor}
+                scale={scale}
             />
 
             {!chatBoxOpen && (
